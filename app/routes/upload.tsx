@@ -150,7 +150,7 @@ export default function Upload() {
                         type="submit"
                         disabled={isSubmitting}
                     >
-                        {isSubmitting ? "Uploading..." : "Upload Video"}
+                        {isSubmitting ? "Uploading... This can take several minutes" : "Upload Video"}
                     </button>
                     </Form>
                     {isSubmitting  ? createPortal(<Loader show={true}/>, document.body): null}
