@@ -137,15 +137,15 @@ export default function Join() {
         <Form className="space-y-6" method="post" noValidate>
           <div>
             <label className="text-sm font-medium" htmlFor="email">
-              <span className="block text-gray-700">Email Address</span>
+              <span className="block text-amber">Email Address</span>
               {actionData?.errors?.email && (
-                <span className="block pt-1 text-red-700" id="email-error">
+                <span className="block pt-1 text-red" id="email-error">
                   {actionData?.errors?.email}
                 </span>
               )}
             </label>
             <input
-              className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+              className="w-full rounded border border-amber px-2 py-1 text-lg"
               type="email"
               name="email"
               id="email"
@@ -157,15 +157,15 @@ export default function Join() {
           </div>
           <div>
             <label className="text-sm font-medium" htmlFor="username">
-              <span className="block text-gray-700">Username</span>
+              <span className="block text-amber">Username</span>
               {actionData?.errors?.username && (
-                <span className="block pt-1 text-red-700" id="username-error">
+                <span className="block pt-1 text-red" id="username-error">
                   {actionData?.errors?.username}
                 </span>
               )}
             </label>
             <input
-              className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+              className="w-full rounded border border-amber px-2 py-1 text-lg"
               type="text"
               name="username"
               id="username"
@@ -177,12 +177,12 @@ export default function Join() {
           </div>
           <div>
             <label className="text-sm font-medium" htmlFor="password">
-              <span className="block text-gray-700">Password</span>
-              <span className="block font-light text-gray-700">
+              <span className="block text-amber">Password</span>
+              <span className="block font-light text-amber">
                 Must have at least 6 characters.
               </span>
               {actionData?.errors?.password && (
-                <span className="pt-1 text-red-700" id="password-error">
+                <span className="pt-1 text-red" id="password-error">
                   {actionData?.errors?.password}
                 </span>
               )}
@@ -191,7 +191,7 @@ export default function Join() {
               id="password"
               type="password"
               name="password"
-              className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+              className="w-full rounded border border-amber px-2 py-1 text-lg"
               autoComplete="new-password"
               aria-invalid={actionData?.errors?.password ? true : undefined}
               aria-describedby="password-error"
@@ -199,17 +199,17 @@ export default function Join() {
             />
           </div>
           <button
-            className="w-full rounded bg-amber py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+            className="w-full rounded bg-amber py-2 px-4 text-white hover:mustard focus:amber"
             type="submit"
           >
             Create Account
           </button>
           <input type="hidden" name="redirectTo" value={redirectTo} />
           <div className="flex items-center justify-center">
-            <div className="text-center text-sm text-gray-500">
+            <div className="text-center text-sm text-amber">
               Already have an account?{" "}
               <Link
-                className="text-blue-500 underline"
+                className="text-amber underline"
                 to={{
                   pathname: "/login",
                   search: searchParams.toString(),

@@ -15,13 +15,19 @@ import {
 
 import tailwindStylesheetUrl from "./styles/tailwind.css";
 import { getUser } from "./session.server";
+import { cssBundleHref } from "@remix-run/css-bundle";
 
 export const meta: MetaFunction = () => {
-  return [{ title: "New Remix App" }];
+  return [{ title: "Swordflow HEMA" }];
 };
 
 export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: tailwindStylesheetUrl }];
+  const links = [{ rel: "stylesheet", href: tailwindStylesheetUrl }];
+  if(cssBundleHref)
+  {
+    links.push({ rel: "stylesheet", href: cssBundleHref });
+  }
+  return links;
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
