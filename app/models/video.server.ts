@@ -20,6 +20,18 @@ async function getCloudflareAuthToken() {
   return CLOUDFLARE_API_TOKEN;
 }
 
+async function uploadFileToSupabase(file: File, userId: string) {
+  const { data, error } = await supabase.storage
+    .from('uploads')
+    .upload(`${userId}/${file.name}`, file);
+
+  if (error) {
+    throw new Error(`Failed to upload file: ${error.message}`);
+  }
+
+  return { success: true, result: { uid: data.id } };
+}
+
 async function uploadVideoToCloudflare(videoFile: File) {
   const token = await getCloudflareAuthToken();
   const formData = new FormData();
@@ -51,6 +63,18 @@ async function deleteVideoFromCloudflare(videoId: string) {
   return result;
 }
 
+async function saveFileToSupabase(file: File, userId: string) {
+  const { data, error } = await supabase.storage
+    .from('uploads')
+    .upload(`${userId}/${file.name}`, file);
+
+  if (error) {
+    throw new Error(`Failed to upload file: ${error.message}`);
+  }
+
+  return data;
+}
+
 export async function getVideoListItems({ userId }: { userId: User["id"] }) {
   const { data } = await supabase
     .from("videos")
@@ -66,7 +90,7 @@ export async function createVideo({
   userId,
   videoFile,
 }: Pick<Video, "description" | "title"> & { userId: User["id"]; videoFile: File }) {
-  const cloudflareResponse = await uploadVideoToCloudflare(videoFile) as { success: boolean; result: { uid: string } };
+  const cloudflareResponse = await uploadFileToSupabase(videoFile, userId) as { success: boolean; result: { uid: string } };
 
   if (!cloudflareResponse.success) {
     console.log("upload failed");

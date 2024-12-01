@@ -9,6 +9,7 @@ import { createUserSession, getUserId } from "~/session.server";
 import { createUser, getProfileByEmail, getProfileByUsername } from "~/models/user.server";
 import { validateEmail } from "~/utils";
 import * as React from "react";
+import { createImage } from "~/models/image.server";
 
 export const meta: MetaFunction = () => {
   return [{
@@ -21,6 +22,7 @@ interface ActionData {
     username?: string;
     email?: string;
     password?: string;
+    image?: string;
   };
 }
 
@@ -36,19 +38,23 @@ export const action: ActionFunction = async ({ request }) => {
   const username = formData.get("username");
   const password = formData.get("password");
   const redirectTo = formData.get("redirectTo");
+  const image = formData.get("image");
+
 
   // Ensure the email is valid
   if (!validateEmail(email)) {
     return json<ActionData>(
-      { errors: {
-        email: "Email is invalid."
-      } },
+      {
+        errors: {
+          email: "Email is invalid."
+        }
+      },
       { status: 400 }
     );
   }
 
   // Ensure the username is valid
-  if (typeof(username) !== "string") {
+  if (typeof (username) !== "string") {
     return json<ActionData>(
       { errors: { username: "Username is invalid." } },
       { status: 400 }
@@ -65,10 +71,19 @@ export const action: ActionFunction = async ({ request }) => {
   // Enforce minimum password length
   if (password.length < 6) {
     return json<ActionData>(
-      { errors: {
-        password: "Password is too short.",
-        username: undefined
-      } },
+      {
+        errors: {
+          password: "Password is too short.",
+          username: undefined
+        }
+      },
+      { status: 400 }
+    );
+  }
+
+  if (!(image instanceof File)) {
+    return json<ActionData>(
+      { errors: { image: "Video file is required." } },
       { status: 400 }
     );
   }
@@ -78,28 +93,41 @@ export const action: ActionFunction = async ({ request }) => {
   const existingUser = await getProfileByEmail(email);
   if (existingUser) {
     return json<ActionData>(
-      { errors: {
-        email: "A user already exists with this email.",
-        username: undefined
-      } },
+      {
+        errors: {
+          email: "A user already exists with this email.",
+          username: undefined
+        }
+      },
       { status: 400 }
     );
   }
 
-    // A user could potentially already exist within our system
+  // A user could potentially already exist within our system
   // and we should communicate that well
   const checkUsername = await getProfileByUsername(username);
   if (existingUser) {
     return json<ActionData>(
-      { errors: {
-        email: "That username already exists.",
-        username: undefined
-      } },
+      {
+        errors: {
+          email: "That username already exists.",
+          username: undefined
+        }
+      },
       { status: 400 }
     );
   }
 
   const user = await createUser(email, password, username);
+
+  try {
+    const uploadResult = await createImage({ name: `${username}-profile`, description: "Profile Image", userId: user?.id, type: "profile", imageFile: image });
+  } catch (error) {
+    return json<ActionData>(
+      { errors: { image: "Failed to upload video." } },
+      { status: 500 }
+    );
+  }
 
   return createUserSession({
     request,
@@ -117,6 +145,7 @@ export default function Join() {
   const emailRef = React.useRef<HTMLInputElement>(null);
   const usernameRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
+  const imageRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     if (actionData?.errors?.email) {
@@ -128,6 +157,10 @@ export default function Join() {
 
     if (actionData?.errors?.password) {
       passwordRef?.current?.focus();
+    }
+
+    if (actionData?.errors?.image) {
+      imageRef?.current?.focus();
     }
   }, [actionData]);
 
@@ -198,6 +231,24 @@ export default function Join() {
               ref={passwordRef}
             />
           </div>
+          <label className="text-sm font-medium" htmlFor="image">
+            <span className="block text-mustard">Image File (Not larger than 200MB)</span>
+            {actionData?.errors?.image && (
+              <span className="block pt-1 text-red" id="image-error">
+                {actionData?.errors?.image}
+              </span>
+            )}
+          </label>
+          <input
+            className="w-full rounded border border-mustard px-2 py-1 text-lg"
+            type="file"
+            name="image"
+            id="image"
+            required
+            aria-invalid={actionData?.errors?.image ? true : undefined}
+            aria-describedby="image-error"
+            ref={imageRef}
+          />
           <button
             className="w-full rounded bg-amber py-2 px-4 text-white hover:mustard focus:amber"
             type="submit"

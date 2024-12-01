@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import invariant from "tiny-invariant";
 
-export type User = { id: string; email: string, username: string};
+export type User = { id: string; email: string, username: string, created_at: string, updated_at: string, instructor: boolean };
 
 // Abstract this away
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -47,18 +47,18 @@ export async function setProfileUsername(id: string, username: string) {
 export async function getProfileById(id: string) {
   const { data, error } = await supabase
     .from("profiles")
-    .select("email, id")
+    .select("email, id, username, instructor, created_at, updated_at")
     .eq("id", id)
     .single();
 
   if (error) return null;
-  if (data) return { id: data.id, email: data.email };
+  if (data) return { id: data.id, email: data.email, username: data.username, instructor: data.instructor, created_at: data.created_at, updated_at: data.updated_at };
 }
 
 export async function getProfileByEmail(email?: string) {
   const { data, error } = await supabase
     .from("profiles")
-    .select("email, id")
+    .select("email, id, username, instructor, created_at, updated_at")
     .eq("email", email)
     .single();
 
@@ -69,7 +69,7 @@ export async function getProfileByEmail(email?: string) {
 export async function getProfileByUsername(username?: string) {
   const { data, error } = await supabase
     .from("profiles")
-    .select("username, id")
+    .select("email, id, username, instructor, created_at, updated_at")
     .eq("username", username)
     .single();
 
