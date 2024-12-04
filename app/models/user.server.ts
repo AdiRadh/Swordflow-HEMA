@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import invariant from "tiny-invariant";
 
-export type User = { id: string; email: string, username: string, created_at: string, updated_at: string, instructor: boolean };
+export type User = { id: string; email: string, username: string, created_at: string, instructor: boolean, club : string | null };
 
 // Abstract this away
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -47,22 +47,29 @@ export async function setProfileUsername(id: string, username: string) {
 export async function getProfileById(id: string) {
   const { data, error } = await supabase
     .from("profiles")
-    .select("email, id, username, instructor, created_at, updated_at")
+    .select("email, id, username, instructor, created_at, instructor, club")
     .eq("id", id)
     .single();
-
-  if (error) return null;
-  if (data) return { id: data.id, email: data.email, username: data.username, instructor: data.instructor, created_at: data.created_at, updated_at: data.updated_at };
+    console.log(data);
+  if (error) {
+    console.log(error);
+    console.log("error");
+  };
+  if (data) return { id: data.id, email: data.email, username: data.username, instructor: data.instructor, created_at: data.created_at };
 }
 
 export async function getProfileByEmail(email?: string) {
+  console.log(email);
   const { data, error } = await supabase
     .from("profiles")
-    .select("email, id, username, instructor, created_at, updated_at")
+    .select("email, id, username, instructor, created_at, instructor, club")
     .eq("email", email)
     .single();
-
-  if (error) return null;
+    console.log(data);
+  if (error) {
+    console.log(error);
+    console.log("error");
+  };
   if (data) return data;
 }
 
@@ -82,9 +89,15 @@ export async function verifyLogin(email: string, password: string) {
     email,
     password,
   });
+  console.log("starting verify "+data.user?.email);
 
-  if (error) return undefined;
+
   const profile = await getProfileByEmail(data.user?.email);
-
+  console.log("got user");
+  console.log(profile);
+  if (error) {
+    console.log(error);
+    console.log("error");
+  };
   return profile;
 }

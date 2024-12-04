@@ -141,3 +141,18 @@ export async function getImage({
 
   return null;
 }
+
+export async function getImageData( userId: string, type : string ) {
+  const { data, error } = await supabase
+    .from("images")
+    .select("*")
+    .eq("created_by", userId)
+    .eq("type", type)
+    .single();
+
+  if (error) {
+    throw new Error("Failed to retrieve image data");
+  }
+
+  return data;
+}

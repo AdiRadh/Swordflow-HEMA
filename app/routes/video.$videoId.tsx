@@ -6,6 +6,7 @@ import { requireUserId } from "~/session.server";
 import { Player } from './components/cloudflare/cloudflarePlayer';
 import { getVideo, Video } from "~/models/video.server";
 import invariant from "tiny-invariant";
+import VideoComments from "./videocomments.$videoId";
 
 type LoaderData = {
     current: Video;
@@ -32,6 +33,7 @@ export default function VideosPage() {
     return (
       <div className="flex h-full min-h-screen flex-col">
             <Player source={data.current.cloudflare_id} />
+            <VideoComments key={data.current.id} />
       </div>
     );
   }

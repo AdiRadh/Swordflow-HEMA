@@ -81,13 +81,6 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
 
-  if (!(image instanceof File)) {
-    return json<ActionData>(
-      { errors: { image: "Video file is required." } },
-      { status: 400 }
-    );
-  }
-
   // A user could potentially already exist within our system
   // and we should communicate that well
   const existingUser = await getProfileByEmail(email);
@@ -121,7 +114,9 @@ export const action: ActionFunction = async ({ request }) => {
   const user = await createUser(email, password, username);
 
   try {
-    const uploadResult = await createImage({ name: `${username}-profile`, description: "Profile Image", userId: user?.id, type: "profile", imageFile: image });
+    if(image != null && image instanceof File) {
+      const uploadResult = await createImage({ name: `${username}-profile`, description: "Profile Image", userId: user?.id, type: "profile", imageFile: image });
+    }
   } catch (error) {
     return json<ActionData>(
       { errors: { image: "Failed to upload video." } },
@@ -244,7 +239,6 @@ export default function Join() {
             type="file"
             name="image"
             id="image"
-            required
             aria-invalid={actionData?.errors?.image ? true : undefined}
             aria-describedby="image-error"
             ref={imageRef}

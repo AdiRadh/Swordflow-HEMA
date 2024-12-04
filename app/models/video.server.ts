@@ -21,10 +21,11 @@ async function getCloudflareAuthToken() {
 }
 
 async function uploadFileToSupabase(file: File, userId: string) {
+  console.log("upload started");
   const { data, error } = await supabase.storage
     .from('uploads')
     .upload(`${userId}/${file.name}`, file);
-
+  console.log("upload recorded");
   if (error) {
     throw new Error(`Failed to upload file: ${error.message}`);
   }
@@ -90,7 +91,7 @@ export async function createVideo({
   userId,
   videoFile,
 }: Pick<Video, "description" | "title"> & { userId: User["id"]; videoFile: File }) {
-  const cloudflareResponse = await uploadFileToSupabase(videoFile, userId) as { success: boolean; result: { uid: string } };
+  const cloudflareResponse = await uploadVideoToCloudflare(videoFile) as { success: boolean; result: { uid: string } };
 
   if (!cloudflareResponse.success) {
     console.log("upload failed");

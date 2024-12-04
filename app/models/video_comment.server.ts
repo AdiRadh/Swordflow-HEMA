@@ -5,29 +5,30 @@ export type VideoComment = {
   id: number;
   created_at: Date | null;
   created_by: string;
-  name: string;
-  description: string;
+  comment: string;
+  videoId: number;
   type: string;
 };
 
-export async function getVideoCommentListItems({ userId }: { userId: User["id"] }) {
+export async function getVideoCommentListItems({ userId, videoId }: { userId: User["id"], videoId: number }) {
   const { data } = await supabase
     .from("video_comments")
     .select("id, title")
-    .eq("created_by", userId);
+    .eq("created_by", userId)
+    .eq("video_id", videoId);
 
   return data;
 }
 
 export async function createVideoComment({
-  name,
-  description,
+  comment,
   type,
+  videoId,
   userId,
-}: Pick<VideoComment, "name" | "description" | "type"> & { userId: User["id"] }) {
+}: Pick<VideoComment, "comment" | "type" | "videoId"> & { userId: User["id"] }) {
   const { data, error } = await supabase
     .from("video_comments")
-    .insert({ name, description, type, created_by: userId })
+    .insert({ comment, type, created_by: userId })
     .select("*")
     .single();
 

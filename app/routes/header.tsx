@@ -7,6 +7,7 @@ const navigation = [
   { name: 'Upload', href: '/upload', current: false },
   { name: 'Training', href: '#', current: false },
   { name: 'Routine', href: '#', current: false },
+  { name: 'Tools', href: '#', current: false },
 ]
 
 function classNames(...classes: string[]) {
@@ -75,7 +76,7 @@ export default function Navbar() {
               >
                 <MenuItem>
                   <a
-                    href="#"
+                    href="profile"
                     className="block px-4 py-2 text-sm text-mustard data-[focus]:bg-amber data-[focus]:outline-none"
                   >
                     Your Profile
